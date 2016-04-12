@@ -1,0 +1,23 @@
+{
+  "name": "minerva-bot",
+  "version": "1.0.0",
+  "description": "A bot for Discord",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joy01804/minerva-bot.git"
+  },
+  "author": "Yi-An Chang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joy01804/minerva-bot/issues"
+  },
+  "homepage": "https://github.com/joy01804/minerva-bot#readme",
+  "dependencies": {
+    "discordie": "^0.5.0"
+  }
+}
