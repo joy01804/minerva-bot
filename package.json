@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/joy01804/minerva-bot#readme",
   "dependencies": {
-    "discordie": "^0.5.0"
+    "cfenv": "^1.0.3",
+    "discordie": "^0.5.0",
+    "loopback": "^2.27.0"
   }
 }
