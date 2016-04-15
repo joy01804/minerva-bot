@@ -1,5 +1,6 @@
 'use strict';
 
+var swearjar = require('swearjar');
 var cool = require('cool-ascii-faces');
 
 const no_gif = [11, 12, 44, 45, 53, 56, 58, 66, 67, 76];
@@ -44,6 +45,17 @@ function available(num) {
 
 function mentions(message, id) {
   message.mentions.forEach(user => {
+    if(user.bot && swearjar.profane(message.content)) {
+      message.channel.createPermissionOverwrite(message.member, 0, 0x0000800)
+      .then(po => {
+        message.reply(' has been muted for 1 minute for disrespecting the bots.');
+        setTimeout(function unmute() {
+          po.delete();
+        }, 60000)
+      });
+
+      return;
+    }
     if(user.id === id) {
       message.channel.sendMessage(cool());
       return;
