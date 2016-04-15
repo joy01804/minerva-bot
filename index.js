@@ -35,5 +35,5 @@ client.Dispatcher.on(Events.GATEWAY_READY, e => {
 });
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
-  analyze(e.message);
+  analyze(e.message, client.User.id);
 });

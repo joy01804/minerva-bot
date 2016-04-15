@@ -1,10 +1,13 @@
 'use strict';
 
+var cool = require('cool-ascii-faces');
+
 const no_gif = [11, 12, 44, 45, 53, 56, 58, 66, 67, 76];
 
-module.exports = function analyze_message(message) {
+module.exports = function analyze_message(message, bot_id) {
   legacy(message);
   wushu(message);
+  mentions(message, bot_id);
 }
 
 function legacy(message) {
@@ -37,4 +40,13 @@ function available(num) {
   }
 
   return true;
-}
+};
+
+function mentions(message, id) {
+  message.mentions.forEach(user => {
+    if(user.id === id) {
+      message.channel.sendMessage(cool());
+      return;
+    }
+  });
+};
