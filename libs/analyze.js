@@ -53,7 +53,7 @@ function available(num) {
 function mentions(message, id) {
   message.mentions.forEach(user => {
     if(user.bot && swearjar.profane(message.content)) {
-      message.channel.createPermissionOverwrite(message.member, 0, 0x0000800)
+      message.channel.createPermissionOverwrite(message.member, 0, 0x0000800+0x0000008)
       .then(po => {
         message.reply(' has been muted for 1 minute for disrespecting the bots.');
         setTimeout(function unmute() {
