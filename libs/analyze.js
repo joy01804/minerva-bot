@@ -24,7 +24,7 @@ function legacy(message) {
   }
 
   if(message.content.match(/Hatsumi/)) {
-    message.channel.sendMessage("Sexy Batman says: Looking for trouble?", true);
+    message.channel.sendMessage("Sexy Batman says: Looking for trouble?");
   }
 };
 
@@ -51,41 +51,68 @@ function available(num) {
 };
 
 function mentions(message, id) {
+  var msg = message.content;
+  var mentioned = false;
+  var bot_user;
+
   message.mentions.forEach(user => {
-    if(user.bot && swearjar.profane(message.content)) {
-      message.channel.createPermissionOverwrite(message.member, 0, 0x0000800+0x0000008)
+    if (user.bot && swearjar.profane(msg)) {
+      message.channel.createPermissionOverwrite(message.member, 0, 0x0000800 + 0x0000008)
       .then(po => {
         message.reply(' has been muted for 1 minute for disrespecting the bots.');
         setTimeout(function unmute() {
-          po.delete()
+          po.delete();
         }, 60000);
       });
 
       return;
     }
 
-    if(user.id === id) {
-      let regex_id = new RegExp('<@'+id+'>', 'g');
-      let msg = message.content.replace(regex_id, 'bot');
+    if (user.id === id) {
+      msg = msg.split('<@' + id + '>').join('').trim();
+      mentioned = true;
+      bot_user = user;
+    }
+    else {
+      msg = msg.split('<@' + user.id + '>').join(user.username).trim();
+    }
+  });
 
+  if(mentioned) {
+    console.info(msg);
+    request.post({
+      url: 'https://cleverbot.io/1.0/ask',
+      body: {
+        user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
+        key: process.env.CLEAVERBOT_KEY || config.CLEAVERBOT_KEY,
+        nick: bot_user.username,
+        text: msg
+      },
+      json: true
+    })
+    .then(body => {
+      message.reply(body.response);
+    })
+    .catch(err => {
+      console.error(err.error.status);
+      message.reply(cool());
+
+      // Try reinitiate the bot.
       request.post({
-        url: 'https://cleverbot.io/1.0/ask',
+        url: 'https://cleverbot.io/1.0/create',
         body: {
           user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
           key: process.env.CLEAVERBOT_KEY || config.CLEAVERBOT_KEY,
-          nick: user.username,
-          text: msg
+          nick: bot_user.username
         },
         json: true
       })
       .then(body => {
-        message.reply(body.response);
+        console.log('Connected to CleverBot with session id: ' + body.nick)
       })
       .catch(err => {
-        console.error(err);
-        message.reply(cool());
-      })
-      return;
-    }
-  });
+        console.error(err.error.status || err);
+      });
+    });
+  }
 };

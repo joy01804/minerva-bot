@@ -47,8 +47,8 @@ client.Dispatcher.on(Events.GATEWAY_READY, e => {
     console.log('Connected to CleverBot with session id: ' + body.nick)
   })
   .catch(err => {
-    console.error(err);
-  })
+    console.error(err.error.status || err);
+  });
 });
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
