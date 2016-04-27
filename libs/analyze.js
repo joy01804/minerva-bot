@@ -15,6 +15,7 @@ module.exports = function analyze_message(message, bot_id) {
   legacy(message);
   wushu(message);
   mentions(message, bot_id);
+  clean(message);
 }
 
 function legacy(message) {
@@ -113,5 +114,13 @@ function mentions(message, id) {
         console.error(err.error.status || err);
       });
     });
+  }
+};
+
+function clean(message) {
+  if(message.channel.name === 'general' && message.content.charAt(0) === '!') {
+    setTimeout(function() {
+      message.delete();
+    }, 5000);
   }
 };
