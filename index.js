@@ -44,7 +44,12 @@ client.Dispatcher.on(Events.GATEWAY_READY, e => {
     json: true
   })
   .then(body => {
-    console.log('Connected to CleverBot with session id: ' + body.nick)
+    if(body.nick) {
+      console.log('Connected to CleverBot with session id: ' + body.nick);
+    }
+    else {
+      console.log(body.status);
+    }
   })
   .catch(err => {
     console.error(err.error.status || err);

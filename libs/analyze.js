@@ -3,14 +3,13 @@
 var swearjar = require('swearjar');
 var cool = require('cool-ascii-faces');
 var request = require('request-promise');
+var fs = require('fs');
 
 try {
   var config = require('../config.json');
 }
 catch(err) {
 }
-
-const no_gif = [11, 12, 44, 45, 53, 56, 58, 66, 67, 76];
 
 module.exports = function analyze_message(message, bot_id) {
   legacy(message);
@@ -35,19 +34,14 @@ function wushu(message) {
   }
 
   matches.forEach(match => {
-    let num = parseInt(match.split('/')[1]);
-    if(available(num)) {
-      message.channel.uploadFile('./assets/aow' + match + '.gif');
+    try {
+      var file = fs.readFileSync('./assets/aow' + match + '.gif');
+    } catch (error) {
+      console.error(error);
+      return;
     }
+    message.channel.uploadFile(file, match + '.gif');
   });
-};
-
-function available(num) {
-  if(no_gif.indexOf(num) > -1 || num < 1 || num > 84) {
-    return false;
-  }
-
-  return true;
 };
 
 function mentions(message, id) {
@@ -108,7 +102,12 @@ function mentions(message, id) {
         json: true
       })
       .then(body => {
-        console.log('Connected to CleverBot with session id: ' + body.nick)
+        if(body.nick) {
+          console.log('Connected to CleverBot with session id: ' + body.nick);
+        }
+        else {
+          console.log(body.status);
+        }
       })
       .catch(err => {
         console.error(err.error.status || err);
