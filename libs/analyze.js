@@ -79,7 +79,7 @@ function mentions(message, id) {
       url: 'https://cleverbot.io/1.0/ask',
       body: {
         user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
-        key: process.env.CLEAVERBOT_KEY || config.CLEAVERBOT_KEY,
+        key: process.env.CLEVERBOT_KEY || config.CLEVERBOT_KEY,
         nick: bot_user.username,
         text: msg
       },
@@ -97,7 +97,7 @@ function mentions(message, id) {
         url: 'https://cleverbot.io/1.0/create',
         body: {
           user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
-          key: process.env.CLEAVERBOT_KEY || config.CLEAVERBOT_KEY,
+          key: process.env.CLEVERBOT_KEY || config.CLEVERBOT_KEY,
           nick: bot_user.username
         },
         json: true
