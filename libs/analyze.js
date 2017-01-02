@@ -12,20 +12,8 @@ catch(err) {
 }
 
 module.exports = function analyze_message(message, bot_id) {
-  legacy(message);
   wushu(message);
   mentions(message, bot_id);
-  clean(message);
-}
-
-function legacy(message) {
-  if (message.content == "ping") {
-    message.channel.sendMessage("pong");
-  }
-
-  if(message.content.match(/Hatsumi/)) {
-    message.channel.sendMessage("Sexy Batman says: Looking for trouble?");
-  }
 };
 
 function wushu(message) {
@@ -50,20 +38,25 @@ function mentions(message, id) {
   var mentioned = false;
   var bot_user;
 
-  message.mentions.forEach(user => {
+  var fn = user => {
     if (user.bot && swearjar.profane(msg)) {
+      console.info('"' + msg + '" is profane');
       message.channel.createPermissionOverwrite(message.member, 0, 0x0000800 + 0x0000008)
-      .then(po => {
-        message.reply(' has been muted for 1 minute for disrespecting the bots.');
-        setTimeout(function unmute() {
-          po.delete();
-        }, 60000);
+          .then(po => {
+            message.reply(' has been muted for 1 minute for disrespecting the bots.');
+            console.info('"' + msg + '" is profane');
+            setTimeout(function unmute() {
+              po.delete()
+                  .then(po => {
+                    console.info('PO successfully deleted');
+                  }).catch(err => {
+                console.error('PO was not deleted correctly');
+              });
+            }, 60000);
+          }).catch(err => {
+        console.error(err)
       });
-
-      return;
-    }
-
-    if (user.id === id) {
+    } else if (user.id === id) {
       msg = msg.split('<@' + id + '>').join('').trim();
       mentioned = true;
       bot_user = user;
@@ -71,56 +64,57 @@ function mentions(message, id) {
     else {
       msg = msg.split('<@' + user.id + '>').join(user.username).trim();
     }
-  });
 
-  if(mentioned) {
-    console.info(msg);
-    request.post({
-      url: 'https://cleverbot.io/1.0/ask',
-      body: {
-        user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
-        key: process.env.CLEVERBOT_KEY || config.CLEVERBOT_KEY,
-        nick: bot_user.username,
-        text: msg
-      },
-      json: true
-    })
-    .then(body => {
-      message.reply(body.response);
-    })
-    .catch(err => {
-      console.error(err.error.status);
-      message.reply(cool());
+    return Promise.resolve();
+  };
 
-      // Try reinitiate the bot.
+  var actions = message.mentions.map(fn);
+
+  Promise.all(actions)
+  .then(data => {
+    if (mentioned) {
+      console.info(msg);
       request.post({
-        url: 'https://cleverbot.io/1.0/create',
+        url: 'https://cleverbot.io/1.0/ask',
         body: {
           user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
           key: process.env.CLEVERBOT_KEY || config.CLEVERBOT_KEY,
-          nick: bot_user.username
+          nick: bot_user.username,
+          text: msg
         },
         json: true
       })
-      .then(body => {
-        if(body.nick) {
-          console.log('Connected to CleverBot with session id: ' + body.nick);
-        }
-        else {
-          console.log(body.status);
-        }
-      })
-      .catch(err => {
-        console.error(err.error.status || err);
-      });
-    });
-  }
-};
+          .then(body => {
+            message.reply(body.response);
+          })
+          .catch(err => {
+            console.error(err.error.status);
+            message.reply(cool());
 
-function clean(message) {
-  if(message.channel.name === 'general' && message.content.charAt(0) === '!') {
-    setTimeout(function() {
-      message.delete();
-    }, 5000);
-  }
-};
+            // Try reinitiate the bot.
+            request.post({
+              url: 'https://cleverbot.io/1.0/create',
+              body: {
+                user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
+                key: process.env.CLEVERBOT_KEY || config.CLEVERBOT_KEY,
+                nick: bot_user.username
+              },
+              json: true
+            })
+                .then(body => {
+                  if (body.nick) {
+                    console.log('Connected to CleverBot with session id: ' + body.nick);
+                  }
+                  else {
+                    console.log(body.status);
+                  }
+                })
+                .catch(err => {
+                  console.error(err.error.status || err);
+                });
+          });
+    }
+  }).catch(err => {
+    console.error(err)
+  });
+}

@@ -1,31 +1,15 @@
 'use strict';
 
-var loopback = require('loopback');
-var cfenv = require('cfenv');
 var request = require('request-promise');
+var optional = require('optional');
+var config = optional('./config.json');
 
-try {
-  var config = require('./config.json');
-}
-catch(err) {
-}
-
-
-// API application
-var app = module.exports = loopback();
-var appEnv = cfenv.getAppEnv();
-
-app.use('/api', loopback.rest());
-
-app.listen(appEnv.port, appEnv.bind, () => {
-  console.log('App server starting on ' + appEnv.url);
-});
 
 // Discord Bot
 var Discordie = require("discordie");
 var analyze = require('./libs/analyze');
 var Events = Discordie.Events;
-var client = new Discordie();
+var client = new Discordie({autoReconnect: true, delay: 5000});
 
 client.connect({
   token: process.env.BOT_TOKEN || config.BOT_TOKEN
