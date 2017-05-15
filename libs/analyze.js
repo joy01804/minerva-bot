@@ -42,13 +42,18 @@ function poll(message) {
     }
 
     message.channel.sendMessage(poll)
-      .then(message => {
+      .then(mess => {
         reactions.forEach(reaction => {
-          message.addReaction(reaction)
+          mess.addReaction(reaction)
             .catch(err => {
               console.log(err)
             });
         });
+        
+        message.delete()
+          .catch(err => {
+            console.log(err);
+          });
       }).catch(err => {
       console.log(err);
     });
