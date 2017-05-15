@@ -18,26 +18,28 @@ client.connect({
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
   console.log("Connected to Discord as: " + client.User.username);
 
-  request.post({
-    url: 'https://cleverbot.io/1.0/create',
-    body: {
-      user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
-      key: process.env.CLEVERBOT_KEY || config.CLEVERBOT_KEY,
-      nick: client.User.username
-    },
-    json: true
-  })
-  .then(body => {
-    if(body.nick) {
-      console.log('Connected to CleverBot with session id: ' + body.nick);
-    }
-    else {
-      console.log(body.status);
-    }
-  })
-  .catch(err => {
-    console.error(err.error.status || err);
-  });
+  // No more free Cleverbot
+  //
+  // request.post({
+  //   url: 'https://cleverbot.io/1.0/create',
+  //   body: {
+  //     user: process.env.CLEVERBOT_USER || config.CLEVERBOT_USER,
+  //     key: process.env.CLEVERBOT_KEY || config.CLEVERBOT_KEY,
+  //     nick: client.User.username
+  //   },
+  //   json: true
+  // })
+  // .then(body => {
+  //   if(body.nick) {
+  //     console.log('Connected to CleverBot with session id: ' + body.nick);
+  //   }
+  //   else {
+  //     console.log(body.status);
+  //   }
+  // })
+  // .catch(err => {
+  //   console.error(err.error.status || err);
+  // });
 });
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
