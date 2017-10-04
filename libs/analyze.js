@@ -66,15 +66,15 @@ function wushu(message) {
     return;
   }
 
-  matches.forEach(match => {
+  for(let i = 0; i < Math.min(matches.length, 10); i++) {
     try {
-      var file = fs.readFileSync('./assets/aow' + match + '.gif');
+      var file = fs.readFileSync('./assets/aow' + matches[i] + '.gif');
     } catch (error) {
       console.error(error);
       return;
     }
-    message.channel.uploadFile(file, match + '.gif');
-  });
+    message.channel.uploadFile(file, matches[i] + '.gif');
+  }
 };
 
 function mentions(message, id) {
