@@ -4,12 +4,7 @@ var swearjar = require('swearjar');
 var cool = require('cool-ascii-faces');
 var request = require('request-promise');
 var fs = require('fs');
-
-try {
-  var config = require('../config.json');
-}
-catch(err) {
-}
+var config = optional('../config.json');
 
 module.exports = function analyze_message(message, bot_id) {
   poll(message);
@@ -49,7 +44,7 @@ function poll(message) {
               console.log(err)
             });
         });
-        
+
         message.delete()
           .catch(err => {
             console.log(err);
